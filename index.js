@@ -4,9 +4,22 @@
  * sudo kill -9 pid （如图：sudo kill -9 304）
  */
 
+/**加载user.js, 加载自定义模块时， 必须使用路径形式 */
+ const user = require('./user');
+
+ /**局部作用域测试 */
+console.log(user.name); 
+user.show(); 
+console.log(user.person.skill) 
+
+/**全局作用域测试 */
+console.log(global.child)
+console.log(global.obj.name)
+console.log(global.say())
+
 /**
  * MVC思想
- * 
+ *
  * controller 控制器 处理业务
  * model 数据模型 操作数据
  * view 视图 页面渲染&json数据响应
