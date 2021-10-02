@@ -7,12 +7,10 @@
 -- 查询所有学生的学号和姓名 表: student
 
 -- 字段: sno、 sname
-
 select sno, sname from student
 
 -- 查询学生的全部信息(全部字段信息)
 -- * 是通配符，代表所有字段
-
 select * from student
 
 
