@@ -6,7 +6,7 @@ const path = '../fs/fs.txt';
  * 文件写入，调用writeFile方法向文件中写入内容
  * 1. 如果没有该文件，则尝试创建
  * 2. writeFile 是覆盖写入
- * 
+ *
  * @param 要写的文件路径，绝对和相对均可
  * @param 要写入的字符串
  * @param 字符集， 默认是utf-8
@@ -21,15 +21,15 @@ fs.writeFile(path, 'hello node js', 'utf8', (error) => {
  * 1. 如果没有该文件，则尝试创建
  * 2. 追加写入
  * 3. 参数和writeFile方法一样
- * 
+ *
  * @param 要写的文件路径，绝对和相对均可
  * @param 要写入的字符串
  * @param 字符集， 默认是utf-8
  * @param 写入完成后触发的回调函数，该函数有一个参数err
  */
 fs.appendFile(path, ' hello world', (error) => {
-    if(error) console.log(error)
-})
+  if (error) console.log(error);
+});
 
 /**
  * 文件读取
@@ -47,14 +47,14 @@ fs.readFile(path, 'utf8', (error, result) => {
 
 /**
  * 调用readdir方法遍历目录
- * 
+ *
  * @param 要遍历的目录的路径
  * @param 字符集，默认utf-8
  * @param 遍历完成后触发的回调函数，有两个参数 err 和 files
  *        err: 错误对象
- *        files: 所有文件和目录的名称，数组形式    
+ *        files: 所有文件和目录的名称，数组形式
  */
-fs.readdir('../hand_writing',(err, files) => {
-    if(err) console.log(err);
-    if(files.length) console.log(files)
-})
+fs.readdir('../hand_writing', (err, files) => {
+  if (err) console.log(err);
+  if (files.length) console.log(files);
+});
