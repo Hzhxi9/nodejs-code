@@ -207,7 +207,7 @@ npm cache clean --force
     ```
     https://www.npmjs.com 上面的账号
     felix_lurt/qqmko09ijn
-    npm adduser
+    npm add user
     ```
 
   - 上传包
@@ -249,3 +249,84 @@ npm cache clean --force
 ```
 npm view gulp versions
 ```
+
+- npm 脚本
+
+  - 定义
+
+    npm 允许在package.json文件里面，使用scripts字段定义脚本命令
+
+    ```json
+    {
+      // ...
+      "scripts": {
+        "build": "node build.js"
+      }
+    }
+    ```
+  
+  - 执行顺序
+
+    如股票npm脚本里面需要执行多个任务，那么需要明确它们的执行顺序
+
+    ```js
+    // script1.js
+    var x = 0;
+    console.log(x)
+    ```
+
+    ```js
+    var y = 0;
+    console.log(y)
+    ```
+
+    ```json
+    "scripts": {
+      "script1": "node script1.js",
+      "script2": "node script2.js"
+    }
+    ```
+
+    如果是并行执行(即同时的平行执行),可以使用&符号
+
+    ```
+    npm run script1 & npm run script2
+    ```
+
+    如果是继发执行(即只有前一个任务成功，才执行下一个任务),可以使用&&符号
+
+    ```
+    npm run script1 && npm run script2
+    ```
+
+- 简写模式
+
+常用的npm脚本简写形式
+
+```js
+npm start // npm run start
+```
+
+- 变量
+
+npm脚本有个一个非常强大的功能，就是可以使用npm的内部变量
+
+  - 通过 npm_package_前缀，npm脚本可以拿到package.json里面的字段。
+
+    >注意: 一定要在npm脚本运行(如: npm run view)才可以，直接在命令行中运行js(如: node view.js)是拿不到值的
+
+    ```json
+    {
+      "name": "foo", 
+      "version": "1.2.5",
+      "scripts": {
+        "view": "node view.js"
+      }
+    }
+    ```
+    那么变量npm_package_name返回foo, 变量npm_package_version返回1.2.5
+
+    ```js
+    console.log(process.env.npm_package_name); // foo
+    console.log(process.env.npm_package_version); // 1.2.5
+    ```
