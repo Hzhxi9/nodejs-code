@@ -254,7 +254,7 @@ npm view gulp versions
 
   - 定义
 
-    npm 允许在package.json文件里面，使用scripts字段定义脚本命令
+    npm 允许在 package.json 文件里面，使用 scripts 字段定义脚本命令
 
     ```json
     {
@@ -264,20 +264,20 @@ npm view gulp versions
       }
     }
     ```
-  
+
   - 执行顺序
 
-    如股票npm脚本里面需要执行多个任务，那么需要明确它们的执行顺序
+    如股票 npm 脚本里面需要执行多个任务，那么需要明确它们的执行顺序
 
     ```js
     // script1.js
     var x = 0;
-    console.log(x)
+    console.log(x);
     ```
 
     ```js
     var y = 0;
-    console.log(y)
+    console.log(y);
     ```
 
     ```json
@@ -301,7 +301,7 @@ npm view gulp versions
 
 - 简写模式
 
-常用的npm脚本简写形式
+常用的 npm 脚本简写形式
 
 ```js
 npm start // npm run start
@@ -309,24 +309,165 @@ npm start // npm run start
 
 - 变量
 
-npm脚本有个一个非常强大的功能，就是可以使用npm的内部变量
+npm 脚本有个一个非常强大的功能，就是可以使用 npm 的内部变量
 
-  - 通过 npm_package_前缀，npm脚本可以拿到package.json里面的字段。
+- 通过 npm*package*前缀，npm 脚本可以拿到 package.json 里面的字段。
 
-    >注意: 一定要在npm脚本运行(如: npm run view)才可以，直接在命令行中运行js(如: node view.js)是拿不到值的
+  > 注意: 一定要在 npm 脚本运行(如: npm run view)才可以，直接在命令行中运行 js(如: node view.js)是拿不到值的
 
-    ```json
-    {
-      "name": "foo", 
-      "version": "1.2.5",
-      "scripts": {
-        "view": "node view.js"
-      }
+  ```json
+  {
+    "name": "foo",
+    "version": "1.2.5",
+    "scripts": {
+      "view": "node view.js"
     }
-    ```
-    那么变量npm_package_name返回foo, 变量npm_package_version返回1.2.5
+  }
+  ```
 
-    ```js
-    console.log(process.env.npm_package_name); // foo
-    console.log(process.env.npm_package_version); // 1.2.5
-    ```
+  那么变量 npm_package_name 返回 foo, 变量 npm_package_version 返回 1.2.5
+
+  ```js
+  console.log(process.env.npm_package_name); // foo
+  console.log(process.env.npm_package_version); // 1.2.5
+  ```
+
+  上面代码中，我们通过环境变量 process.env 对象，拿到 package.json 的字段值。
+  如果是 Bash 脚本，可以用 npm_package_name 和 npm_package_version 取到这两个值。
+
+  ```json
+  "repository": {
+    "type": "git",
+    "url": "xxx"
+  },
+  "scripts": {
+    "view": "echo $npm_package_repository_type"
+  }
+  ```
+
+  上面代码中，repository 字段的 type 属性，可以通过 npm_package_type 取到
+
+  ```json
+  "scripts": {
+    "install": "foo.js"
+  }
+  ```
+
+  上面代码中，npm_package_scripts_install 变量的值等于 foo.js
+
+  然而 npm 脚本还可以通过 npm config 前缀，拿到 npm 的配置变量，即 npm config get xxx 命令返回的值。 比如当前模块的发行标签，可以通过 npm_config_tag 取到。
+
+  ```json
+  "view": "echo $npm_config_tag"
+  ```
+
+  注意,package.json 里面的 config 对象，可以被环境变量覆盖
+
+  ```json
+  {
+    "name": "foo",
+    "config": { "prot": "8080" },
+    "scripts": { "start": "node server.js" }
+  }
+  ```
+
+  上面代码中，npm_package_config_port 变量返回的是 8080。 这个值可以用下面的方法覆盖。
+
+  ```
+  npm config set foo:port 80
+  ```
+
+  最后，env 命令可以列出所有的环境变量
+
+  ```json
+  "env": "env
+  ```
+
+- npm 安装 git 上发布的包
+
+  ```
+  // 这样适合安装公司内部的git服务器上的项目
+  npm install git+https://git@github.com:lurongtao/gp-project.git
+
+  // 或者以ssh的方式
+  npm install git+ssh://git@github.com:lurrongtao/gp-project.git
+  ```
+
+- cross-env 使用
+
+cross-env 是什么
+
+运行跨平台设置和使用环境变量的脚本
+
+出现原因
+
+当您使用 NODE_ENV=production, 来设置环境变量, 大多数 Windows 命令提示将会阻塞(报错)。
+(异常是 Windows 上的 Bash, 它使用本机 Bash),换言之 Windows 不支持 NODE_ENV=production 的设置方式。
+
+解决
+
+cross-env 使得你可以使用单个命令，而不必担心为平台正确设置或使用环境变量。
+
+这个迷你的包(cross-env)能够提供一个设置环境变量的 script，让你能够以 Unix 方式设置环境变量，然后在 Windows 上也能兼容运行。
+
+安装
+
+```
+npm install --save-dev cross-env
+```
+
+使用
+
+```json
+{
+  "scripts":{
+    "build: "cross-env NODE_ENV=production webpack --config build/webpack.config.js"
+  }
+}
+```
+
+NODE_ENV 环境变量将有cross-env设置打印 process.env.NODE_ENV === "production"
+
+2. NRM: npm registry manager
+
+2.1 手工切换源
+
+- 查看当前源
+
+```
+npm config get registry
+```
+
+- 切换淘宝源
+
+```
+npm config set registry https://registry.npm.taobao.org
+```
+
+2.2 NRM管理源
+
+NRM是npm的镜像管理工具，有时候国外资源太慢，有时候国外资源太慢，使用这个就可以快速在npm源间切换
+
+- 安装nrm
+
+```
+// 在命令行执行命令, 全局安装nrm
+nom install -g nrm
+```
+
+- 使用nrm
+
+执行命令nrm ls查看可选的源。其中带*的是当前使用的源。上面的输出表明当前源是官方源。
+
+- 切换nrm
+
+如果要切换到taobao源，执行命令nrm use taobao
+
+- 测试速度
+
+通过nrm test测试相应源的响应时间
+
+```
+nrm test
+```
+
