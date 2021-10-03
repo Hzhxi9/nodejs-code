@@ -61,7 +61,7 @@ https://github.com/nvm-sh/nvm/blob/master/README.md
 
 ```
 nvm-windows
-nodist 
+nodist
 ```
 
 - nvm 常见命令
@@ -75,8 +75,7 @@ nvm alias  default v14.15.0 // 切换默认版本
 
 1. NPM: Node Package Manager(node 的历史版本)
 
-
-- 全局安装package
+- 全局安装 package
 
 ```
 npm install forever --global(-g)
@@ -99,7 +98,7 @@ windows
 C:\Users\你的用户名\AppData\Roaming\npm\node_modules
 ```
 
-- 本地安装package
+- 本地安装 package
 
 ```
 cd ~/desktop
@@ -108,6 +107,7 @@ cd gp-project
 npm install underscore
 npm list(ls)
 ```
+
 - package.json 初始化
 
 ```
@@ -116,8 +116,8 @@ ls
 cat package.json
 ```
 
-- 使用package.json
-  
+- 使用 package.json
+
 ```
 npm install underscore --save
 cat package.json
@@ -161,11 +161,91 @@ npm update
 npm cache clean --force
 ```
 
+- 制作自定义 npm 包
 
+  - 便携模块
 
-- 查看gulp所有版本
+    保存为 index.js
+
+    ```js
+    exports.sayHello = function () {
+      return 'hello world';
+    };
+    ```
+
+  - 初始化包描述文件
+
+    ```
+    npm init package.json
+    ```
+
+    ```json
+    {
+      "name": "gp19-npm",
+      "version": "1.0.1",
+      "description": "gp19 self module",
+      "main": "index.js",
+      "scripts": {
+        "test": "make test"
+      },
+      "repository": {
+        "type": "Git",
+        "url": "git+https://github.com/lurongtao/gp19-npm.git"
+      },
+      "keywords": ["demo"],
+      "author": "Felixlu",
+      "license": "ISC",
+      "bugs": {
+        "url": "https://github.com/lurongtao/gp19-npm/issues"
+      },
+      "homepage": "https://github.com/lurongtao/gp19-npm#readme"
+    }
+    ```
+
+  - 注册 npm 仓库账号
+
+    ```
+    https://www.npmjs.com 上面的账号
+    felix_lurt/qqmko09ijn
+    npm adduser
+    ```
+
+  - 上传包
+
+    ```
+    npm publish
+    ```
+
+  - 403 Forbidden
+
+    ```
+    npm config get registry // 查看npm源
+    npm config set registry http://registry.npmjs.org // 切换npm源方法一
+    nrm use npm // 切换npm源方法二
+    ```
+
+  - 安装包
+
+    ```
+    npm install gp19-npm
+    ```
+
+  - 卸载包
+
+    ```
+    npm ls // 查看当前项目引用了那些包
+    npm unpublish --force // 卸载包
+    ```
+
+  - 使用引入包
+
+    ```
+    var hello = require('gp19-npm');
+    hello.sayHello()
+    ```
+
+- 查看 gulp 所有版本
 
 ```
 npm view gulp versions
 ```
-
