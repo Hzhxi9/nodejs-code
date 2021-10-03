@@ -651,21 +651,113 @@ console.log(chalk.blue('hello world'));
   exports.done = true;
   console.log('b done');
   ```
-  
+
   ```js
   // main.js
   console.log('main starting');
-  const a = require('./a.js')
-  const b = require('./b.js')
+  const a = require('./a.js');
+  const b = require('./b.js');
   console.log('in main, a.done=%j, b.done = %j', a.done, b.done);
   ```
-  main.js首先会load a.js, 此时执行到const b = require('./b.js');
 
-  程序会转去load b.js, 在b.js中执行到const a = require('./a.js');
+  main.js 首先会 load a.js, 此时执行到 const b = require('./b.js');
 
-  为了防止无限循环，将a.js exports的未完成副本返回b.js模块。然后b.js完成加载，并将其导出对象提供给a.js模块。
+  程序会转去 load b.js, 在 b.js 中执行到 const a = require('./a.js');
 
-  我们知道nodeJS对每个js文件进行了一层包装称为module， module中有一个属性exports，当调用require(a.js)的时候其实返回的是module.exports对象，module.exports 初始化为一个{}空的object。
-  所以在上面的例子中，执行到b.js中const a = require('./a.js'时不会load新的a module, 而是将已经load但是还未完成的a module的exports属性返回给b module，所以b.js拿到的是a module的exports对象，即{done: false}， 虽然在a.js中exports.done被修改成了true，但是由于此时a.js未load完成，所以在b.js输出的a module的属性done为false， 而在main.js中输出的a module的属性done为true。
+  为了防止无限循环，将 a.js exports 的未完成副本返回 b.js 模块。然后 b.js 完成加载，并将其导出对象提供给 a.js 模块。
 
-  Nodejs通过上面这种返回未完成exports对象来解决循环引用的问题。
+  我们知道 nodeJS 对每个 js 文件进行了一层包装称为 module， module 中有一个属性 exports，当调用 require(a.js)的时候其实返回的是 module.exports 对象，module.exports 初始化为一个{}空的 object。
+  所以在上面的例子中，执行到 b.js 中 const a = require('./a.js'时不会 load 新的 a module, 而是将已经 load 但是还未完成的 a module 的 exports 属性返回给 b module，所以 b.js 拿到的是 a module 的 exports 对象，即{done: false}， 虽然在 a.js 中 exports.done 被修改成了 true，但是由于此时 a.js 未 load 完成，所以在 b.js 输出的 a module 的属性 done 为 false， 而在 main.js 中输出的 a module 的属性 done 为 true。
+
+  Nodejs 通过上面这种返回未完成 exports 对象来解决循环引用的问题。
+
+四、 常用内置模块
+
+1. url
+
+- parse
+
+```js
+// url.parse(urlString, parseQueryString, slashesDenoteHost)
+const url = require('url');
+const urlString =
+  'https://www.baidu.com:443/ad/index.html?id=8&name=mouse#tag=110';
+const parsedStr = url.parse(urlString);
+console.log(parsedStr);
+```
+
+- format
+
+```js
+// url.format(urlObject)
+const url = require('url');
+const urlObject = {
+  protocol: 'https:',
+  slashes: true,
+  auth: null,
+  host: 'www.baidu.com:443',
+  port: '443',
+  hostname: 'www.baidu.com',
+  hash: '#tag=110',
+  search: '?id=8&name=mouse',
+  query: { id: '8', name: 'mouse' },
+  pathname: '/ad/index.html',
+  path: '/ad/index.html?id=8&name=mouse',
+  href: 'https://www.baidu.com:443/ad/index.html?id=8&name=mouse#tag=110',
+};
+const parsedObj = url.format(urlObject);
+console.log(parsedObj);
+```
+
+- resolve
+
+```js
+// url.resolve(form, to)
+const url = require('url');
+var a = url.resolve('/one/two/three', 'four');
+var b = url.resolve('http://example.com/', '/one');
+var c = url.resolve('http://example.com/one', '/tow');
+console.log(a + ',' + b + ',' + c);
+```
+
+2. querystring
+
+- parse
+
+```js
+// querystring.parse(str, sep, eq, options)
+const querystring = require('querystring');
+var qs = 'x=3&y=4';
+var parsed = querystring.parse(qs);
+console.log(parsed);
+```
+
+- stringify
+
+```js
+// querystring.stringify(obj, sep, eq, options)
+const querystring = require('querystring');
+var qo = { x: 3, y: 4 };
+var parsed = querystring.stringify(qo);
+console.log(parsed);
+```
+
+- escape/unescape
+
+```js
+// querystring.escape(str)
+const querystring = require('querystring);
+var str = 'id=3&city=北京&url=https://www.baidu.com';
+var escaped = querystring.escape(str);
+console.log(escaped);
+```
+
+```js
+// querystring.unescape(str)
+const querystring = require('querystring);
+var str = 'id%3D3%26city%3D%E5%8C%97%E4%BA%AC%26url%3Dhttps%3A%2F%2Fwww.baidu.com';
+var unescaped = querystring.unescape(str);
+console.log(unescaped);
+```
+
+
