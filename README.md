@@ -426,7 +426,7 @@ npm install --save-dev cross-env
 }
 ```
 
-NODE_ENV 环境变量将有cross-env设置打印 process.env.NODE_ENV === "production"
+NODE_ENV 环境变量将有 cross-env 设置打印 process.env.NODE_ENV === "production"
 
 2. NRM: npm registry manager
 
@@ -444,28 +444,28 @@ npm config get registry
 npm config set registry https://registry.npm.taobao.org
 ```
 
-2.2 NRM管理源
+2.2 NRM 管理源
 
-NRM是npm的镜像管理工具，有时候国外资源太慢，有时候国外资源太慢，使用这个就可以快速在npm源间切换
+NRM 是 npm 的镜像管理工具，有时候国外资源太慢，有时候国外资源太慢，使用这个就可以快速在 npm 源间切换
 
-- 安装nrm
+- 安装 nrm
 
 ```
 // 在命令行执行命令, 全局安装nrm
 nom install -g nrm
 ```
 
-- 使用nrm
+- 使用 nrm
 
-执行命令nrm ls查看可选的源。其中带*的是当前使用的源。上面的输出表明当前源是官方源。
+执行命令 nrm ls 查看可选的源。其中带\*的是当前使用的源。上面的输出表明当前源是官方源。
 
-- 切换nrm
+- 切换 nrm
 
-如果要切换到taobao源，执行命令nrm use taobao
+如果要切换到 taobao 源，执行命令 nrm use taobao
 
 - 测试速度
 
-通过nrm test测试相应源的响应时间
+通过 nrm test 测试相应源的响应时间
 
 ```
 nrm test
@@ -473,9 +473,9 @@ nrm test
 
 3. NPX: npm package extention
 
-npm 从5.2版开始， 增加了npx命令。 它有很多用处, 本文介绍该命令的主要使用场景。
+npm 从 5.2 版开始， 增加了 npx 命令。 它有很多用处, 本文介绍该命令的主要使用场景。
 
-Node自带npm模块，所以可以直接使用npx命令。
+Node 自带 npm 模块，所以可以直接使用 npx 命令。
 
 万一不能用，就要手动安装一下。
 
@@ -485,60 +485,61 @@ npm install -g npx
 
 3.1 调用项目安装的模块
 
-npx 想要解决的主要问题，就是调用项目内部安装的模块。比如项目内部安装了Mocha
+npx 想要解决的主要问题，就是调用项目内部安装的模块。比如项目内部安装了 Mocha
 
 ```
 npm install -d mocha
 ```
 
-一般来说调用Mocha，只能在项目脚本和package.json的scripts字段里面。如果想在命令行下调用，必须像下面这样。
+一般来说调用 Mocha，只能在项目脚本和 package.json 的 scripts 字段里面。如果想在命令行下调用，必须像下面这样。
 
 ```
 // 项目的根目录下执行
 node-modules/.bin/mocha --version
 ```
 
-npx就是解决这个问题，让项目内部安装的模块用起来更方便，只要像下面这样调用就行了
+npx 就是解决这个问题，让项目内部安装的模块用起来更方便，只要像下面这样调用就行了
 
 ```
 npx mocha --version
 ```
 
-npx的原理很简单，就是运行的时候，回到node_modules/.bin路径和环境变量$PATH里面，检查命令是否存在
+npx 的原理很简单，就是运行的时候，回到 node_modules/.bin 路径和环境变量$PATH 里面，检查命令是否存在
 
-由于npx会检查环境变量$PATH，所以系统命令也可以调用
+由于 npx 会检查环境变量$PATH，所以系统命令也可以调用
 
 ```
 // 等同于ls
 npx ls
 ```
 
-注意Bash内置的命令不在$PATH里面，所以不能调用
+注意 Bash 内置的命令不在$PATH 里面，所以不能调用
 
-比如cd是Bash命令，因此就不能用npx cd
+比如 cd 是 Bash 命令，因此就不能用 npx cd
 
 3.2 避免全局安装模块
 
-除了调用项目内部模块，npx还能避免全局安装的模块。
+除了调用项目内部模块，npx 还能避免全局安装的模块。
 
-比如create-react-app这个模块是全局安装的，npx可以运行它，而且不进行全局安装
+比如 create-react-app 这个模块是全局安装的，npx 可以运行它，而且不进行全局安装
 
 ```
 npx create-react-app my-react-app
 ```
-上面代码运行时，npx将create-react-app下载到一个临时目录，使用以后再删除。所以以后再次执行上面的命令，会重新下载create-react-app。
 
-注意，只要npx后面的模块无法在本地发现，就会下载同名模块。
+上面代码运行时，npx 将 create-react-app 下载到一个临时目录，使用以后再删除。所以以后再次执行上面的命令，会重新下载 create-react-app。
 
-比如在本地没有安装http-server模块，下面的命令会自动下载该模块，在当前目录启动一个Web服务
+注意，只要 npx 后面的模块无法在本地发现，就会下载同名模块。
+
+比如在本地没有安装 http-server 模块，下面的命令会自动下载该模块，在当前目录启动一个 Web 服务
 
 ```
 npx http-server
 ```
 
-3.3 -no-install参数和 --ignore-existing 参数
+3.3 -no-install 参数和 --ignore-existing 参数
 
-如果想让npx强制使用本地模块，不下载远程模块，可以使用--no-install参数。
+如果想让 npx 强制使用本地模块，不下载远程模块，可以使用--no-install 参数。
 
 如果本地不存在该模块，就会报错
 
@@ -546,19 +547,125 @@ npx http-server
 npx --no-install http-server
 ```
 
-反过来如果忽略本地的同名模块，强制安装使用远程模块，可以使用--ignore-existing参数
+反过来如果忽略本地的同名模块，强制安装使用远程模块，可以使用--ignore-existing 参数
 
 ```
 npx --no-install http-server
 ```
 
-反过来如果忽略本地的同名模块，强制安装使用远程模块，可以使用--ignore-existing参数。
+反过来如果忽略本地的同名模块，强制安装使用远程模块，可以使用--ignore-existing 参数。
 
-比如本地已经安装了http-server，但还是想使用远程模块，就用这个参数
+比如本地已经安装了 http-server，但还是想使用远程模块，就用这个参数
 
 ```
 npx --ignore-existing http-server
 ```
 
+四、 模块/包 与 CommonJS
 
+1. 模块/包分类
 
+NodeJS 有三类模块，即内置模块、第三方模块、自定义模块。
+
+- 内置的模块
+
+NodeJS 内置的模块又叫核心模块，NodeJS 安装完成可直接使用。
+
+```js
+const path = require('path');
+var extname = path.extname('index.html');
+console.log(extname);
+```
+
+- 第三方模块
+
+第三方的 NodeJS 模块指的是为了实现某些功能，发布了 npmjs.org 上的模块，按照一定的开源协议供社群使用
+
+```
+npm install chalk
+```
+
+```js
+const chalk = require('chalk');
+console.log(chalk.blue('hello world'));
+```
+
+- 自定义模块
+
+自定义的 NodeJS 模块，也叫文件模块，是我们自己写的供自己使用的模块。
+
+同时这类模块发布到 npmjs.org 上就成了开源的第三方模块。
+
+自定义模块是在运行时动态加载，需要完整的路径分析、文件定位、编译执行过程、速度相对核心模块稍微慢一些，但是用的非常多。
+
+- 模块定义、接口暴露和引用接口
+
+  我们可以把公共的功能抽离称为一个单独的 js 文件作为一个模块，默认情况下面这个模块里面的方法或者属性，外面是没法访问的。
+
+  如果是要让外部可以访问模块里面的方法或者属性，就必须在模块里面通过 exports 或者 module.exports 暴露属性或者方法。
+
+  ```js
+  // m1.js
+  const name = 'gp19';
+  const sayName = () => {
+    console.log(name);
+  };
+
+  // 接口暴露方法一
+  module.exports = {
+    say: sayName,
+  };
+  // 接口暴露方法二
+  exports.say = sayName;
+  // 错误！
+  exports = {
+    say: sayName,
+  };
+  ```
+
+  ```js
+  // main.js
+  const m1 = require('./m1');
+  m1.say();
+  ```
+
+- 模块的循环引用
+
+  由于 exports 使用方式不对，会在两个不同 js 循环引用的情况下，导致其中一个 js 无法获取另外一个 js 的方法，从而导致执行报错。
+
+  ```js
+  // a.js
+  exports.done = false;
+  const b = require('./b.js');
+  console.log('in a, b.done = %j', b.done);
+  exports.done = true;
+  console.log('a done');
+  ```
+
+  ```js
+  // b.js
+  console.log('b starting');
+  exports.done = false;
+  const a = require('./a.js');
+  console.log('in b, a.done = %j', a.done);
+  exports.done = true;
+  console.log('b done');
+  ```
+  
+  ```js
+  // main.js
+  console.log('main starting');
+  const a = require('./a.js')
+  const b = require('./b.js')
+  console.log('in main, a.done=%j, b.done = %j', a.done, b.done);
+  ```
+  main.js首先会load a.js, 此时执行到const b = require('./b.js');
+
+  程序会转去load b.js, 在b.js中执行到const a = require('./a.js');
+
+  为了防止无限循环，将a.js exports的未完成副本返回b.js模块。然后b.js完成加载，并将其导出对象提供给a.js模块。
+
+  我们知道nodeJS对每个js文件进行了一层包装称为module， module中有一个属性exports，当调用require(a.js)的时候其实返回的是module.exports对象，module.exports 初始化为一个{}空的object。
+  所以在上面的例子中，执行到b.js中const a = require('./a.js'时不会load新的a module, 而是将已经load但是还未完成的a module的exports属性返回给b module，所以b.js拿到的是a module的exports对象，即{done: false}， 虽然在a.js中exports.done被修改成了true，但是由于此时a.js未load完成，所以在b.js输出的a module的属性done为false， 而在main.js中输出的a module的属性done为true。
+
+  Nodejs通过上面这种返回未完成exports对象来解决循环引用的问题。
