@@ -155,6 +155,25 @@ npm list | grep gulp
 npm update
 ```
 
+- node package versions
+
+```
+// 13.4.6
+marjor: 13  // 主版本号, 大版本更新
+minor: 4  // 次版本号, 添加新功能或者特殊的修改
+patch: 6 // 补丁版本, bug的修改, 偶数是稳定的patch, 奇数是不稳定的
+```
+
+```
+npm outdated
+
+// npm 版本符号
+^: 只锁定主版本号, 后面取最新版本
+~: 锁定主版本号和次版本号, 后面取最新版本
+不加符号: 锁定指定版本, 锁定patch
+*: 最新版本
+```
+
 - 清除缓存
 
 ```
@@ -428,7 +447,7 @@ npm install --save-dev cross-env
 
 NODE_ENV 环境变量将有 cross-env 设置打印 process.env.NODE_ENV === "production"
 
-2. NRM: npm registry manager
+1. NRM: npm registry manager
 
 2.1 手工切换源
 
