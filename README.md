@@ -760,4 +760,179 @@ var unescaped = querystring.unescape(str);
 console.log(unescaped);
 ```
 
+3. http/https
 
+- get
+
+```js
+var http = require('http');
+var https = require('https');
+
+// 1、接口 2、跨域
+const server = http.createServer((req, res) => {
+  var url = req.url.substr(1);
+  var data = '';
+  res.writeHeader(200, {
+    'content-type': 'application/json;charset=utf-8',
+    'Access-Control-Origin': '*',
+  });
+
+  https.get(`https://m.lagou.com/listmore.json${url}`, (res) => {
+    res.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    res.on('end', () => {
+      res.end(
+        JSON.stringify({
+          ret: true,
+          data,
+        })
+      );
+    });
+  });
+});
+server.listen(8080. () => console.log('server running'))
+```
+
+- post: 服务器提交(攻击)
+
+```js
+const https = require('https');
+const querystring = require('querystring');
+
+const postData = querystring.stringify({
+  province: '上海',
+  city: '上海',
+  district: '宝山区',
+  address: '同济支路199号智慧七立方3号楼2-4层',
+  latitude: 43.0,
+  longitude: 160.0,
+  message: '求购一条小鱼',
+  contact: '13666666',
+  type: 'sell',
+  time: 1571217561,
+});
+
+const options = {
+  protocol: 'https',
+  hostname: 'ik9hkddr.qcloud.la',
+  method: 'POST',
+  port: 443,
+  path: '/index.php/tarde/add_item',
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Length': Buffer.byteLength(postData),
+  },
+};
+
+function doPost() {
+  let data;
+  let req = https.request(options, (res) => {
+    res.on('data', (chunk) => (data += chunk));
+    res.on('end', () => console.log(data));
+  });
+  req.write(postData);
+  req.end();
+}
+```
+
+- JSONP 跨域
+
+```js
+const http = require('http');
+const url = require('url');
+
+const app = http.createServer((req, res) => {
+  let urlObj = url.parse(req.url, true);
+
+  switch (urlObj.pathname) {
+    case '/api/user':
+      res.end(`${urlObj.query.cb}({"name": "gp145"})`);
+      break;
+    default:
+      res.end('404');
+      break;
+  }
+});
+
+app.listen(8080, () => console.log('server is running'));
+```
+
+- CORS 跨域
+
+```js
+const http = require('http');
+const url = require('url');
+const querystring = require('querystring');
+
+const app = http.createServer((req, res) => {
+  let data = '';
+  let urlObj = url.parse(req.url, true);
+
+  res.writeHeader(200, {
+    'content-type': 'application/json;charset=utf-8',
+    'Access-Control-Allow-Origin': '*',
+  });
+
+  req.on('data', (chunk) => (data += chunk));
+
+  req.on('end', () => responseResult(querystring.parse(data)));
+
+  function responseResult(data) {
+    switch (urlObj.pathname) {
+      case '/api/login':
+        res.end(
+          JSON.stringify({
+            message: data,
+          })
+        );
+        break;
+      default:
+        res.end(404);
+        break;
+    }
+  }
+});
+app.listen(8080, () => console.log('server is running'));
+```
+
+- middleware(http-proxy-middware)
+
+```js
+const http = require('http');
+const proxy = require('http-proxy-middleware');
+
+http.createServer((req, res) => {
+  const url = req.url;
+
+  res.writeHeader(200, {
+    'Access-Control-Allow-Origin': '*',
+  });
+
+  if(/^\/api/.test(url)){
+    const apiProxy = proxy('/api', {
+      target: 'https://m.lagou.com',
+      chargeOrigin: true,
+      pathRewrite: {
+        '^/api': ''
+      }
+    })
+
+    // http-proy-middleware 在Node.js中使用的方法
+    apiProxy(req, res)
+  } else {
+    switch(url){
+      case '/index.html':
+          res.end('index.html');
+          break;
+      case '/search.html':
+          res.end('search.html')
+          break;
+      default:
+         res.end('404');
+         break
+    }
+  }
+}).listen(8080);
+```
