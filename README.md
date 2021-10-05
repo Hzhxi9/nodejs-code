@@ -1105,7 +1105,7 @@ const fs = require('fs');
 const readStream = fs.createReadStream('./note.txt');
 const writeStream = fs.createWriteStream('./note2.txt');
 
-writeStream.write(readStream)
+writeStream.write(readStream);
 ```
 
 7. Zlib
@@ -1120,7 +1120,7 @@ const readStream = fs.createReadStream('./note.txt');
 const writeStream = fs.createWriteStream('./note2.txt');
 
 readStream.pipe(gzip).pipe(writeStream);
-writeStream.write(readStream)
+writeStream.write(readStream);
 ```
 
 8. ReadLine
@@ -1130,14 +1130,14 @@ const readLine = require('readline');
 
 const rl = readLine.createInterface({
   input: process.stdin,
-  output: process.stdout
-})
+  output: process.stdout,
+});
 
-rl.question("What do you think of Node.js?", (ans) => {
+rl.question('What do you think of Node.js?', (ans) => {
   // TODO: Log the answer in a database
-  console.log(`Thank you for your valuable feedback: ${answer}`)
-  rl.close()
-})
+  console.log(`Thank you for your valuable feedback: ${answer}`);
+  rl.close();
+});
 ```
 
 9. Crypto
@@ -1148,5 +1148,45 @@ const secret = 'abcdef';
 
 const hash = crypto.createHmac('sha256', secret).update('hhh').digest('hex');
 
-console.log(hash)
+console.log(hash);
+```
+
+五、路由
+
+```js
+var http = require('http');
+var fs = require('fs');
+
+http
+  .createServer(function (req, res) {
+    switch (req.url) {
+      case '/home':
+        res.write('home');
+        res.end();
+        break;
+      case '/mine':
+        res.write('mine');
+        res.end();
+        break;
+      case '/login':
+        fs.readFile('./static/login.html', (err, data) => {
+          if (err) throw err;
+          res.write(data);
+          res.end();
+        });
+        break;
+      case '/fulian.jpg':
+        fs.readFile('./static/fulian.jpg', 'binary', (err, data) => {
+          if (err) throw err;
+          res.write(data);
+          res.end();
+        });
+        break;
+      default:
+        break;
+    }
+  })
+  .listen(8000, 'localhost', function () {
+    console.log('服务器运行在： http://localhost:8000');
+  });
 ```
