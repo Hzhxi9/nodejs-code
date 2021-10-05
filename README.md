@@ -903,36 +903,250 @@ app.listen(8080, () => console.log('server is running'));
 const http = require('http');
 const proxy = require('http-proxy-middleware');
 
-http.createServer((req, res) => {
-  const url = req.url;
+http
+  .createServer((req, res) => {
+    const url = req.url;
 
-  res.writeHeader(200, {
-    'Access-Control-Allow-Origin': '*',
-  });
+    res.writeHeader(200, {
+      'Access-Control-Allow-Origin': '*',
+    });
 
-  if(/^\/api/.test(url)){
-    const apiProxy = proxy('/api', {
-      target: 'https://m.lagou.com',
-      chargeOrigin: true,
-      pathRewrite: {
-        '^/api': ''
-      }
-    })
+    if (/^\/api/.test(url)) {
+      const apiProxy = proxy('/api', {
+        target: 'https://m.lagou.com',
+        chargeOrigin: true,
+        pathRewrite: {
+          '^/api': '',
+        },
+      });
 
-    // http-proy-middleware 在Node.js中使用的方法
-    apiProxy(req, res)
-  } else {
-    switch(url){
-      case '/index.html':
+      // http-proy-middleware 在Node.js中使用的方法
+      apiProxy(req, res);
+    } else {
+      switch (url) {
+        case '/index.html':
           res.end('index.html');
           break;
-      case '/search.html':
-          res.end('search.html')
+        case '/search.html':
+          res.end('search.html');
           break;
-      default:
-         res.end('404');
-         break
+        default:
+          res.end('404');
+          break;
+      }
     }
+  })
+  .listen(8080);
+```
+
+- 爬虫
+
+```js
+const https= require('https');
+const http = require('http');
+const cheerio = require('cheerio');
+
+http.createServer((req, res) => {
+  res.writeHeader(200, {
+    'Content-Type': 'application/json;charset=utf-8',
+  })
+
+  const options ={
+    protocol: 'https:',
+    hostname: 'maoyan.com',
+    port: 443,
+    path: '/',
+    method: 'GET'
   }
-}).listen(8080);
+
+  const req = https.request(options, res => {
+    let data = '';
+    res.on('data', chunk => data += chunk)
+    res.on('end', () => filterData(data))
+  })
+
+  function filterData(data){
+    let $ = cheerio.load(data);
+    let $movieList = $('.movie-item');
+    let movies = [];
+
+    $movieList.each((index, value) => {
+      movies.push({
+        title: $(value).find('.movie-title').attr('title');
+        score: $(value).find('.movie-score i').text()
+      })
+    })
+
+    res.end(JSON.stringify(movies))
+  }
+
+  req.end()
+}).listen(9000)
+
+```
+
+- Events
+
+```js
+const EventEmitter = require('events');
+
+class MyEventEmitter extends EventEmitter {}
+
+const event = new MyEventEmitter();
+
+event.on('play', (movie) => console.log(movie));
+
+event.emit('play', '我和我的祖国');
+
+event.emit('play', '中国机长');
+```
+
+- File System
+
+```js
+const fs = require('fs');
+const fsP = require('fs').promises;
+
+// 创建文件夹
+fs.mkdir('./logs', (err) => console.log('done.'));
+
+// 文件夹更名
+fs.rename('./logs', './log', () => console.log('done'));
+
+// 删除文件夹
+fs.remdir('./log', () => console.log('done'));
+
+// 写内容到文件里
+fs.writeFile('./logs/log1.txt', 'hello', (err) => {
+  if (err) console.log(err.message);
+  else console.log('文件创建成功');
+});
+
+// 读取文件内容
+fs.readFile('./logs/log1.txt', 'utf-8', (err, data) => {
+  console.log(data);
+});
+
+// 删除文件
+fs.unlink('./logs/log1.txt', (err) => {
+  console.log(err);
+});
+
+// 批量写文件
+for (let i = 0; i < 10; i++) {
+  fs.writeFile(`./logs/log-${i}.txt`, `log-${i}`, (err) => {
+    console.log('done');
+  });
+}
+
+// 读取文件/目录信息
+fs.readdir('./', (err, data) => {
+  data.forEach((value, index) => {
+    fs.stat(`./${value}`, (err, stats) => {
+      // console.log(value + ':' + stats.size)
+      console.log(
+        value + ' is ' + (stats.isDirectory() ? 'directory' : 'file')
+      );
+    });
+  });
+});
+
+// 同步读取文件
+try {
+  const content = fs.readFileSync('./logs/log-1.txt', 'utf-8');
+  console.log(content);
+  console.log(0);
+} catch (e) {
+  console.log(e.message);
+}
+console.log(1);
+
+// 异步读取文件: 方法一
+fs.readFile('./logs/log-0.txt', 'utf-8', (err, content) => {
+  console.log(content);
+  console.log(0);
+});
+console.log(1);
+
+// 异步读取文件: 方法二
+fs.readFile('./logs/log-0.txt', 'utf-8').then((res) => {
+  console.log(res);
+});
+
+// 异步读取文件: 方法三
+function getFile() {
+  return new Promise((res) => {
+    fs.readFile('./logs/log-0.txt', 'utf-8', (err, data) => {
+      resolve(data);
+    });
+  });
+}
+
+(async () => {
+  console.log(await getFile());
+})();
+
+// 异步读取文件: 方法四
+const fsp = fsP
+  .readFile('./logs/log-1.txt', 'utf-8')
+  .then((result) => console.log(result));
+
+console.log(fsP);
+
+// watch 检测文件变化
+fs.watch('./logs/log-0.txt', () => console.log(0));
+```
+
+6. Stream
+
+```js
+const fs = require('fs');
+
+const readStream = fs.createReadStream('./note.txt');
+const writeStream = fs.createWriteStream('./note2.txt');
+
+writeStream.write(readStream)
+```
+
+7. Zlib
+
+```js
+const fs = require('fs');
+const zlib = require('zlib');
+
+const gzip = zlib.createGzip();
+
+const readStream = fs.createReadStream('./note.txt');
+const writeStream = fs.createWriteStream('./note2.txt');
+
+readStream.pipe(gzip).pipe(writeStream);
+writeStream.write(readStream)
+```
+
+8. ReadLine
+
+```js
+const readLine = require('readline');
+
+const rl = readLine.createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
+
+rl.question("What do you think of Node.js?", (ans) => {
+  // TODO: Log the answer in a database
+  console.log(`Thank you for your valuable feedback: ${answer}`)
+  rl.close()
+})
+```
+
+9. Crypto
+
+```js
+const crypto = require('crypto');
+const secret = 'abcdef';
+
+const hash = crypto.createHmac('sha256', secret).update('hhh').digest('hex');
+
+console.log(hash)
 ```
