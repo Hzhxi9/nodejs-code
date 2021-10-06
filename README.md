@@ -692,6 +692,10 @@ console.log(chalk.blue('hello world'));
 
 四、 常用内置模块
 
+NodeJS的浏览器调试: `node --inspect --inspect-brk server.js` 
+
+第三方debug库: debug4js
+
 1. url
 
 - parse
