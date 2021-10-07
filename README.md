@@ -696,12 +696,24 @@ NodeJS的浏览器调试: `node --inspect --inspect-brk server.js`
 
 第三方debug库: debug4js
 
+node进程管理工具
+
+- supervisor
+- nodemon
+- forever
+- pm2 
+
+api管理工具
+
+- postman
+- Insomnia
+
 1. url
 
 - parse
 
 ```js
-// url.parse(urlString, parseQueryString, slashesDenoteHost)
+// url.parse(urlString, parseQueryString, slashesDenoteHost) 
 const url = require('url');
 const urlString =
   'https://www.baidu.com:443/ad/index.html?id=8&name=mouse#tag=110';
@@ -795,7 +807,7 @@ var https = require('https');
 const server = http.createServer((req, res) => {
   var url = req.url.substr(1);
   var data = '';
-  res.writeHeader(200, {
+  res.writeHead(200, {
     'content-type': 'application/json;charset=utf-8',
     'Access-Control-Origin': '*',
   });
@@ -815,6 +827,29 @@ const server = http.createServer((req, res) => {
     });
   });
 });
+server.listen(8080. () => console.log('server running'))
+```
+
+```js
+var http = require('http');
+var https = require('https');
+
+// 1、接口 2、跨域
+const server = http.createServer((req, res) => {
+  https.get('https://www.xiaomiyoupin.com/mtop/mf/cat/list', (result) => {
+    let data = '';
+    result.on('data', chunk => {
+      data += chunk
+    })
+    result.on('end', () => {
+      res.writeHead(200, {
+        'content-type': 'application/json;charset=utf-8';
+      })
+      res.write(data);
+      res.end()
+    })
+  })
+})
 server.listen(8080. () => console.log('server running'))
 ```
 
@@ -860,6 +895,24 @@ function doPost() {
 }
 ```
 
+
+```js
+const server = http.createServer((req, res) => {
+  let data = '';
+  req.on('data', chunk => { data += chunk })
+  req.on('end', () => {
+    res.writeHead(200, {
+      'content-type': 'application/json;charset=utf-8'
+    })
+    res.write(JSON.stringify(querystring.parse(data)))
+  })
+})
+
+server.listen(8080, () => {
+  console.log('localhost:8080')
+})
+```
+
 - JSONP 跨域
 
 ```js
@@ -893,7 +946,7 @@ const app = http.createServer((req, res) => {
   let data = '';
   let urlObj = url.parse(req.url, true);
 
-  res.writeHeader(200, {
+  res.writeHead(200, {
     'content-type': 'application/json;charset=utf-8',
     'Access-Control-Allow-Origin': '*',
   });
@@ -930,7 +983,7 @@ http
   .createServer((req, res) => {
     const url = req.url;
 
-    res.writeHeader(200, {
+    res.writeHead(200, {
       'Access-Control-Allow-Origin': '*',
     });
 
@@ -970,7 +1023,7 @@ const http = require('http');
 const cheerio = require('cheerio');
 
 http.createServer((req, res) => {
-  res.writeHeader(200, {
+  res.writeHead(200, {
     'Content-Type': 'application/json;charset=utf-8',
   })
 
@@ -1236,11 +1289,11 @@ function readStaticFile(res, filePathname){
     fs.readFile(filePathname, (err, data) => {
       // 错误处理
       if(err){
-        res.writeHeader(404, {'Content-Type': "text/plain"})
+        res.writeHead(404, {'Content-Type': "text/plain"})
         res.write('404');
         res.end()
       } else {
-        res.writeHeader(200, {"Content-Type": mimeType});
+        res.writeHead(200, {"Content-Type": mimeType});
         res.write(data);
         res.end()
       }
