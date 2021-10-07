@@ -840,12 +840,12 @@ const server = http.createServer((req, res) => {
     let data = '';
     result.on('data', chunk => {
       data += chunk
-    })
+    }) 
     result.on('end', () => {
       res.writeHead(200, {
         'content-type': 'application/json;charset=utf-8';
       })
-      res.write(data);
+      res.write(data); 
       res.end()
     })
   })
@@ -854,6 +854,12 @@ server.listen(8080. () => console.log('server running'))
 ```
 
 - post: 服务器提交(攻击)
+
+快速搭建express环境
+
+```
+express -e 
+```
 
 ```js
 const https = require('https');
@@ -1173,7 +1179,7 @@ console.log(fsP);
 fs.watch('./logs/log-0.txt', () => console.log(0));
 ```
 
-6. Stream
+1. Stream
 
 ```js
 const fs = require('fs');
