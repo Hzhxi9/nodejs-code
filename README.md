@@ -1278,10 +1278,11 @@ const zlib = require('zlib');
 
 const gzip = zlib.createGzip();
 
-const readStream = fs.createReadStream('./note.txt');
-const writeStream = fs.createWriteStream('./note2.txt');
+const readStream = fs.createReadStream('./logs.txt');
+const writeStream = fs.createWriteStream('./logs.gzip');
 
 readStream.pipe(gzip).pipe(writeStream);
+
 writeStream.write(readStream);
 ```
 
@@ -1308,7 +1309,9 @@ rl.question('What do you think of Node.js?', (ans) => {
 const crypto = require('crypto');
 const secret = 'abcdef';
 
-const hash = crypto.createHmac('sha256', secret).update('hhh').digest('hex');
+const hash = crypto.createHash('sha1').update(secret).digest('hex')
+
+const hmac = crypto.createHmac('sha256', secret).update('hhh').digest('hex');
 
 console.log(hash);
 ```
