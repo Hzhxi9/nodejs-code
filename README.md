@@ -1125,7 +1125,9 @@ event.emit('play', '中国机长');
 const fs = require('fs');
 const fsP = require('fs').promises;
 
-// 创建文件夹
+// 文件操作属于IO操作, 属于异步任务
+
+// 创建文件夹, 回调函数错误优先
 fs.mkdir('./logs', (err) => console.log('done.'));
 
 // 文件夹更名
@@ -1134,16 +1136,30 @@ fs.rename('./logs', './log', () => console.log('done'));
 // 删除文件夹
 fs.remdir('./log', () => console.log('done'));
 
-// 写内容到文件里
-fs.writeFile('./logs/log1.txt', 'hello', (err) => {
+// 读取文件夹
+fs.readdir('./logs', (err, result) => {
+  console.log(result)
+})
+
+// 写内容到文件里 \n=>new line 缩写
+fs.writeFile('./logs/log1.txt', 'hello \n world', (err) => {
   if (err) console.log(err.message);
   else console.log('文件创建成功');
 });
 
 // 读取文件内容
+// 将二进制转为字符串的两种方法
 fs.readFile('./logs/log1.txt', 'utf-8', (err, data) => {
   console.log(data);
 });
+fs.readFile('./logs/log1.txt', (err, content) => {
+  console.log(content.toString())
+})
+
+// 追加文件内容
+fs.appendFile('./logs/log1.txt', '!!', (err) => {
+  console.log('done.')
+})
 
 // 删除文件
 fs.unlink('./logs/log1.txt', (err) => {
@@ -1158,10 +1174,32 @@ for (let i = 0; i < 10; i++) {
 }
 
 // 读取文件/目录信息
+// fs.stat() 查看统计信息
+
+function readDir(dir){
+  fs.readdir(dir, (err, content) => {
+    content.forEach((value, index) => {
+      const joinDir = `${dir}/${value}`
+      fs.stat(joinDir, (err, stats) => {
+        if(stats.isDirectory()){
+          readDir(joinDir)
+        }else{
+          fs.readFile(joinDir，'utf-8', (err, content) => {
+            console.log(content)
+          })
+        }
+      })
+    })
+  })
+}
+
+readDir('./')
+
 fs.readdir('./', (err, data) => {
   data.forEach((value, index) => {
     fs.stat(`./${value}`, (err, stats) => {
       // console.log(value + ':' + stats.size)
+      // stats.isDirectory()： 是否为目录
       console.log(
         value + ' is ' + (stats.isDirectory() ? 'directory' : 'file')
       );
@@ -1200,9 +1238,14 @@ function getFile() {
   });
 }
 
-(async () => {
+;(async () => {
   console.log(await getFile());
 })();
+
+;(async () => {
+  const result = await fsp.readFile('./logs/log1.txt');
+  console.log(result.toString())
+})()
 
 // 异步读取文件: 方法四
 const fsp = fsP
@@ -1212,7 +1255,8 @@ const fsp = fsP
 console.log(fsP);
 
 // watch 检测文件变化
-fs.watch('./logs/log-0.txt', () => console.log(0));
+// watch / watchFile
+fs.watch('./logs/log-0.txt', () => console.log('file has changed'));
 ```
 
 1. Stream
