@@ -672,3 +672,44 @@ const cookieParser = require('cookie-parser');
 // 加载用于解析cookie的中间件
 app.use(cookieParser());
 ```
+
+七、 在 Express 中使用模版引擎
+
+需要在应用中进行如下设置才能让 Express 渲染模板文件：
+
+- views, 放模板文件的目录，比如： app.set('views', './views')
+- view engine, 模板引擎，比如： app.set('view engine', 'ejs')
+
+1. art-template(art-template for express 4.x.)
+
+- install
+
+```
+npm install --save art-template
+npm install --save express-art-template
+```
+
+- example
+
+```js
+const express = require('express');
+const app = express();
+
+// view engine setup
+app.engine('art', require('express-art-template'));
+app.set('view', {
+  debug: process.env.NODE_ENV !== 'production',
+});
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'art');
+
+// routes
+app.set('/', (req, res) => {
+  res.render('index.art', {
+    user: {
+      name: 'aui',
+      tags: ['art', 'template', 'nodejs'],
+    },
+  });
+});
+```
