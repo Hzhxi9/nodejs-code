@@ -692,18 +692,18 @@ console.log(chalk.blue('hello world'));
 
 四、 常用内置模块
 
-NodeJS的浏览器调试: `node --inspect --inspect-brk server.js` 
+NodeJS 的浏览器调试: `node --inspect --inspect-brk server.js`
 
-第三方debug库: debug4js
+第三方 debug 库: debug4js
 
-node进程管理工具
+node 进程管理工具
 
 - supervisor
 - nodemon
 - forever
-- pm2 
+- pm2
 
-api管理工具
+api 管理工具
 
 - postman
 - Insomnia
@@ -713,7 +713,7 @@ api管理工具
 - parse
 
 ```js
-// url.parse(urlString, parseQueryString, slashesDenoteHost) 
+// url.parse(urlString, parseQueryString, slashesDenoteHost)
 const url = require('url');
 const urlString =
   'https://www.baidu.com:443/ad/index.html?id=8&name=mouse#tag=110';
@@ -840,12 +840,12 @@ const server = http.createServer((req, res) => {
     let data = '';
     result.on('data', chunk => {
       data += chunk
-    }) 
+    })
     result.on('end', () => {
       res.writeHead(200, {
         'content-type': 'application/json;charset=utf-8';
       })
-      res.write(data); 
+      res.write(data);
       res.end()
     })
   })
@@ -855,10 +855,10 @@ server.listen(8080. () => console.log('server running'))
 
 - post: 服务器提交(攻击)
 
-快速搭建express环境
+快速搭建 express 环境
 
 ```
-express -e 
+express -e
 ```
 
 ```js
@@ -901,22 +901,23 @@ function doPost() {
 }
 ```
 
-
 ```js
 const server = http.createServer((req, res) => {
   let data = '';
-  req.on('data', chunk => { data += chunk })
+  req.on('data', (chunk) => {
+    data += chunk;
+  });
   req.on('end', () => {
     res.writeHead(200, {
-      'content-type': 'application/json;charset=utf-8'
-    })
-    res.write(JSON.stringify(querystring.parse(data)))
-  })
-})
+      'content-type': 'application/json;charset=utf-8',
+    });
+    res.write(JSON.stringify(querystring.parse(data)));
+  });
+});
 
 server.listen(8080, () => {
-  console.log('localhost:8080')
-})
+  console.log('localhost:8080');
+});
 ```
 
 - JSONP 跨域
@@ -981,7 +982,7 @@ app.listen(8080, () => console.log('server is running'));
 
 - middleware(http-proxy-middware)
 
-老版本的middleware
+老版本的 middleware
 
 ```js
 const http = require('http');
@@ -1023,38 +1024,38 @@ http
   .listen(8080);
 ```
 
-新版本的middleware
+新版本的 middleware
 
 ```js
 const http = require('http');
-const { createProxyMiddleware } = require('http-proxy-middleware')
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const server = http.createServer((req, res) => {
   const urlStr = req.url;
-  if(/\/ajax/.test(urlStr)){
+  if (/\/ajax/.test(urlStr)) {
     const proxy = createProxyMiddleware('/ajax', {
       target: 'https://lady.vip.com',
-      changeOrigin: true
-    })
+      changeOrigin: true,
+    });
 
-    proxy(req, res)
-  } else if(/\/api/.test(urlStr)){
+    proxy(req, res);
+  } else if (/\/api/.test(urlStr)) {
     const proxy2 = createProxyMiddleware('/api', {
       target: 'https://m.lagou.com',
       changeOrigin: true,
       pathRewrite: {
-        '/api': ''
-      }
-    })
+        '/api': '',
+      },
+    });
 
-    proxy2(req, res)
+    proxy2(req, res);
   } else {
-    console.log('error')
+    console.log('error');
   }
-})
+});
 server.listen(8080, () => {
-  console.log('server is running')
-})
+  console.log('server is running');
+});
 ```
 
 - 爬虫
@@ -1309,7 +1310,7 @@ rl.question('What do you think of Node.js?', (ans) => {
 const crypto = require('crypto');
 const secret = 'abcdef';
 
-const hash = crypto.createHash('sha1').update(secret).digest('hex')
+const hash = crypto.createHash('sha1').update(secret).digest('hex');
 
 const hmac = crypto.createHmac('sha256', secret).update('hhh').digest('hex');
 
@@ -1368,34 +1369,34 @@ const path = require('path');
 const fs = require('fs');
 const mime = require('mime');
 
-function readStaticFile(res, filePathname){
+function readStaticFile(res, filePathname) {
   var ext = path.parse(filePathname).ext;
   var mimeType = mime.getType(ext);
 
   // 判断路径是否有后缀，有的话则说明客服端要请求的是一个文件
-  if(ext){
+  if (ext) {
     // 根据传入的目标文件路径来读取对应wej1
     fs.readFile(filePathname, (err, data) => {
       // 错误处理
-      if(err){
-        res.writeHead(404, {'Content-Type': "text/plain"})
+      if (err) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.write('404');
-        res.end()
+        res.end();
       } else {
-        res.writeHead(200, {"Content-Type": mimeType});
+        res.writeHead(200, { 'Content-Type': mimeType });
         res.write(data);
-        res.end()
+        res.end();
       }
-    })
+    });
     // 返回true 表示客户端想要的是静态文件
-    return true
+    return true;
   } else {
     // 返回 false 表示, 客户端想要的 不是 静态文件
-    return false
+    return false;
   }
 }
 // 导出函数
-module.exports = readStaticFile
+module.exports = readStaticFile;
 ```
 
 2. server
@@ -1416,12 +1417,115 @@ var server = http.createServer((req, res) => {
   var filePathname = path.join(__dirname, '/public', urlPathname);
 
   // 读取静态文件
-  readStaticFile(res, filePathname)
-})
+  readStaticFile(res, filePathname);
+});
 
 // 在 3000 端口监听请求
 server.listen(3000, () => {
-   console.log("服务器运行中.");
-   console.log("正在监听 3000 端口:")
-})
+  console.log('服务器运行中.');
+  console.log('正在监听 3000 端口:');
+});
+```
+
+七、 Yarn 使用入门
+
+1. yarn 使用方法
+
+- 初始化一个新项目
+
+```
+yarn init
+```
+
+- 添加依赖包
+
+```
+yarn add [package]
+yarn add [package]@[version]
+yarn add [package]@[tag]
+```
+
+- 将依赖项添加到不同依赖项类别中
+
+```
+// devDependencies
+yarn add [package] --dev
+
+// peerDependencies
+yarn add [package] --peer
+
+// optionalDependencies
+yarn add [package] --optional
+```
+
+- package.json 介绍
+
+在一个 Node.js 项目中，package.json 几乎是一个必须的文件，它的主要作用就是管理项目中所使用到的外部依赖包，同时它也是 npm 命令的入口文件。
+
+- npm 目前支持以下几类依赖包管理：
+
+  - dependencies
+  - devDependencies
+  - peerDependencies
+  - optionalDependencies
+  - bundleDependencies / bundleDependencies
+
+- dependencies
+
+应用依赖，或者叫做业务依赖，这是我们最常用的依赖包管理对象，它用于指定应用依赖的外部包，这些依赖是应用发布后正常执行时所需要的，但不包含测试时或者本地打包所使用的包。
+
+- devDependencies
+
+开发环境依赖，仅次于 dependencies 的使用频率！它的对象定义和 dependencies 一样，只不过它里面的包只用于开发环境，不用于生产环境。
+
+这些包通常是单元测试或者打包工具等。例如 gulp、grunt、webpack、moca、coffee 等。
+
+- peerDependencies
+
+同等依赖，或者叫同伴依赖，用于指定当前包兼容的宿主版本。
+
+如何理解呢？试想一下，我们编写一个 gulp 的插件，而 gulp 却有多个主版本，我们只想兼容最新的版本，此时就可以用同等依赖来指定
+
+```json
+{
+  "name": "gulp-my-plugin",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "gulp": "3.x"
+  }
+}
+```
+
+- optionalDependencies
+
+可选依赖，如果有一些依赖包即使安装失败，项目仍然能够运行或者希望 npm 继续运行，就可以使用 optionalDependencies。
+
+另外 optionalDependencies 会覆盖 dependencies 中的同名依赖包，所以不要在两个地方都写
+
+- bundledDependencies / bundleDependencies
+
+打包依赖，bundledDependencies 是一个包含依赖包名的数组对象，在发布时会将这个对象中的包打包到最终的发布包里
+
+- 升级依赖包
+
+```
+yarn upgrade [package]
+yarn upgrade [package]@[version]
+yarn upgrade [package]@[tag]
+```
+
+- 移除依赖包
+
+```
+yarn remove [package]
+```
+
+- 安装项目的全部依赖
+
+```
+yarn
+
+// or
+
+yarn install
 ```
