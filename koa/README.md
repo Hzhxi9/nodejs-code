@@ -354,3 +354,313 @@ app.listen(3000, () => {
   console.log('[demo] route-use-middleware is starting at port 3000');
 });
 ```
+
+七、 请求数据获取
+
+1. GET 请求数据获取
+
+- 使用方法
+
+在 koa 中，获取 GET 请求数据源头是 koa 中 request 对象中的 query 方法或 querystring 方法
+query 返回是格式化好的参数对象，querystring 返回的是请求字符串
+由于 ctx 对 request 的 API 有直接引用的方式，所以获取 GET 请求数据有两个途径。
+
+- 是从上下文中直接获取 请求对象 ctx.query，返回如 { a:1, b:2 } 请求字符串 ctx.querystring，返回如 a=1&b=2
+- 是从上下文的 request 对象中获取 请求对象 ctx.request.query，返回如 { a:1, b:2 } 请求字符串 ctx.request.querystring，返回如 a=1&b=2
+
+- 例子
+
+```js
+const Koa = require('koa');
+const app = new Koa();
+
+app.use(async (ctx) => {
+  const url = ctx.url;
+  /**从上下文的request对象中获取*/
+  const request = ctx.request;
+  const reqQuery = request.query;
+  const reqQueryString = request.querystring;
+
+  /**从上下文中直接获取*/
+  const ctxQuery = ctx.query;
+  const ctxQueryString = ctx.querystring;
+
+  ctx.body = {
+    url,
+    reqQuery,
+    reqQueryString,
+    ctxQuery,
+    ctxQueryString,
+  };
+});
+
+app.listen(3000, () => {
+  console.log('[demo] request get is starting at port 3000');
+});
+```
+
+```
+node get.js
+```
+
+2. POS 请求参数获取
+
+- 原理
+
+对于 POST 请求的处理，koa2 没有封装获取参数的方法，需要通过解析上下文 context 中的原生 node.js 请求对象 req，将 POST 表单数据解析成 query string（例如：a=1&b=2&c=3），再将 query string 解析成 JSON 格式（例如：{"a":"1", "b":"2", "c":"3"}
+
+> 注意：ctx.request 是 context 经过封装的请求对象，ctx.req 是 context 提供的 node.js 原生 HTTP 请求对象，同理 ctx.response 是 context 经过封装的响应对象，ctx.res 是 context 提供的 node.js 原生 HTTP 请求对象。
+
+- 解析出 POST 请求上下文中的表单数据
+
+```js
+// 解析上下文里node原生请求的POST参数
+function parsePostData(ctx) {
+  return new Promise((resolve, reject) => {
+    try {
+      let postdata = '';
+      ctx.req.addListener('data', (data) => {
+        postdata += data;
+      });
+      ctx.req.addListener('end', () => {
+        let parseData = parseQueryStr(postdata);
+        resolve(parseData);
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+// 将POST请求参数字符串解析成JSON
+function parseQueryStr(queryStr) {
+  const queryData = {};
+  const queryStrList = queryStr.split('&');
+  for (const [index, queryStr] of queryStrList.entries()) {
+    const itemList = queryStr.split('=');
+    queryData[itemList[0]] = decodeURIComponent(itemList[1]);
+  }
+  return queryData;
+}
+```
+
+- 例子
+
+```js
+const Koa = require('koa');
+const app = new Koa();
+
+app.use(async (ctx) => {
+  if (ctx.url === '/' && ctx.method === 'GEY') {
+    // 当GET请求时候返回表单页面
+    let html = `
+      <h1>koa2 request post demo</h1>
+      <form method="POST" action="/">
+        <p>userName</p>
+        <input name="userName" /><br/>
+        <p>nickName</p>
+        <input name="nickName" /><br/>
+        <p>email</p>
+        <input name="email" /><br/>
+        <button type="submit">submit</button>
+      </form>
+    `;
+    ctx.body = html;
+  } else if (ctx.url === '/' && ctx.method === 'POST') {
+    // 当POST请求的时候，解析POST表单里的数据，并显示出来
+    const postData = await parsePostData(ctx);
+    ctx.body = postData;
+  } else {
+    // 其他请求显示404
+    ctx.body = '<h1>404！！！ o(╯□╰)o</h1>';
+  }
+});
+
+// 解析上下文里node原生请求的POST参数
+function parsePostData(ctx) {
+  return new Promise((resolve, reject) => {
+    try {
+      let postdata = '';
+      ctx.req.addListener('data', (data) => {
+        postdata += data;
+      });
+      ctx.req.addListener('end', function () {
+        let parseData = parseQueryStr(postdata);
+        resolve(parseData);
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+// 将POST请求参数字符串解析成JSON
+function parseQueryStr(queryStr) {
+  let queryData = {};
+  let queryStrList = queryStr.split('&');
+  console.log(queryStrList);
+  for (let [index, queryStr] of queryStrList.entries()) {
+    let itemList = queryStr.split('=');
+    queryData[itemList[0]] = decodeURIComponent(itemList[1]);
+  }
+  return queryData;
+}
+
+app.listen(3000, () => {
+  console.log('[demo] request post is starting at port 3000');
+});
+```
+
+```
+node post.js
+```
+
+八、 koa-bodyparser 中间件
+
+1. 原理
+
+对于 POST 请求的处理，koa-bodyparser 中间件可以把 koa2 上下文的 formData 数据解析到 ctx.request.body 中
+
+2. 安装
+
+安装 koa2 版本的 koa-bodyparser@3 中间件
+
+```
+npm install --save koa-bodyparser@3
+```
+
+3. 例子
+
+```js
+const Koa = require('koa');
+const app = new Koa();
+const bodyParser = require('koa-bodyparser');
+
+// 使用ctx.body解析中间件
+app.use(bodyParser)；
+
+app.use(async(ctx) => {
+  if(ctx.url === '/' && ctx.method === 'GET'){
+    // 当GET请求时候返回表单页面
+    const html = `
+      <h1>koa2 request post demo</h1>
+      <form method="POST" action="/">
+        <p>userName</p>
+        <input name="userName" /><br/>
+        <p>nickName</p>
+        <input name="nickName" /><br/>
+        <p>email</p>
+        <input name="email" /><br/>
+        <button type="submit">submit</button>
+      </form>
+    `
+    ctx.body = html
+  } else if(ctx.url === '/' && ctx.method === 'POST'){
+    // 当POST请求的时候，中间件koa-bodyparser解析POST表单里的数据，并显示出来
+    const postData = ctx.request.body;
+    ctx.body = postData
+  } else {
+    // 其他请求显示404
+    ctx.body = '<h1>404！！！ o(╯□╰)o</h1>'
+  }
+})
+
+app.listen(3000, () => {
+  console.log('[demo] request post is starting at port 3000')
+})
+```
+
+```
+node post-middleware.js
+```
+
+九、 静态资源加载
+
+1. koa-static 中间件使用
+
+- 例子
+
+```js
+const Koa = require('koa');
+const path = require('path');
+const static = require('koa-static');
+
+const app = new Koa();
+
+// 静态资源目录对于相对入口文件index.js的路径
+const staticPath = './static';
+
+app.use(static(path.join(__dirname, staticPath)));
+
+app.use(async (ctx) => {
+  ctx.body = 'hello world';
+});
+
+app.listen(3000, () => {
+  console.log('[demo] static-use-middleware is starting at port 3000');
+});
+```
+
+十、 模板引擎
+
+1. koa2 加载模板引擎
+
+- 安装
+
+```
+# 安装koa模板使用中间件
+npm install --save koa-views
+
+# 安装ejs模板引擎
+npm install --save ejs
+```
+
+- 文件目录
+
+```
+├── package.json
+├── index.js
+└── view
+    └── index.ejs
+```
+
+- index.js
+
+```js
+const Koa = require('koa');
+const views = require('koa-views');
+const path = require('path');
+
+const app = new Koa();
+
+// 加载模版引擎
+
+app.use(
+  views(path.join(__dirname, './view'), {
+    extension: 'ejs',
+  })
+);
+
+app.use(async (ctx) => {
+  const title = 'hello';
+  await ctx.render('index', {
+    title,
+  });
+});
+
+app.listen(3000);
+```
+
+- view/index.ejs
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>EJS Welcome to <%= title %></p>
+  </body>
+</html>
+```
