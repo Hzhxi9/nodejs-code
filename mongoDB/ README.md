@@ -118,6 +118,51 @@ db.user.remove({username: 'xinyi'}, true)
 ```sql
 db.movies.find()
 
+--  查询去重后的结果
+db.movies.distinct('name')
+
+-- 查询=
+db.movies.find({release: '2019-10-14'})
+
+-- 查询>
+db.movies.find({release: {$gt: '2019-10-14'}})
+
+-- 查询<
+db.movies.find({release: {$lt: '2019-10-14'}})
+
+-- 查询>=
+db.movies.find({release: {$gte: '2019-10-14'}})
+
+-- 查询<=
+db.movies.find({release: {$lte: '2019-10-14'}})
+
+-- 查询使用正则
+db.baoguo.find({name: /^1/})
+db.baoguo.find({name: /1$/})
+
+-- 查询指定列name、age数据
+db.userInfo.find({}, {name: 1, age: 1});
+
+-- 指定列加条件
+db.baoguo.find({name: /1$/}, {_id: 0, publishNum: 0})
+
+-- 查询加排序
+db.baoguo.find().sort({release: 1}) -- 升序
+db.baoguo.find().sort({release: -1}) -- 降序
+
+-- 查询指定条数
+db.baoguo.find().limit(3) -- 前三条
+db.baoguo.find().limit(3).skip(3) -- 跳过三条取三条
+
+-- 查询or与
+db.baoguo.find($or: [{release: '2020-12-04'}, {release: '2020-12-05'}])
+
+-- 查询第一条记录
+db.baoguo.findOne()
+
+-- 查询某个结果集的记录条数
+db.baoguo.find().count()
+
 db.movies.find({}, {nm: 1, _id: 0, rt: 1})
 db.movies.find({}, {nm: 1, _id: 0, rt: 1}).sort({rt: -1})
 db.movies.find({}, {nm: 1, _id: 0, rt: 1}).limit(10)
