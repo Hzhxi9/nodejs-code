@@ -101,23 +101,28 @@ app.get('/', (req, res) => res.send('hello world'));
 
 ```js
 // 应用跟路径定义的 GET 和 POST 请求
-// GET method route
+// GET method route 获取数据
 // 对网站首页的访问返回 "Hello World!" 字样
 app.get('/', (req, res) => {
   res.send('hello world');
 });
 
-// 网站首页接受 POST 请求
+// 网站首页接受 POST 请求, 添加数据,
 app.post('/', (req, res) => {
   res.send('Got a POST request');
 });
 
-// /user 节点接受 PUT 请求
+// /user 节点接受 PUT 请求, 修改数据, 覆盖式修改, 需要所有数据
 app.put('/user', (req, res) => {
   res.send('Got a PUT request at /user');
 });
 
-// /user 节点接受 DELETE 请求
+// /user 节点接受 PATCH 请求, 修改数据, 增量式修改， 只需要传修改的某一个熟悉
+app.patch('/user', (req, res) => {
+  res.send('Got a Patch request at /user')
+})
+
+// /user 节点接受 DELETE 请求, 删除数据
 app.delete('/user', (req, res) => {
   res.send('Got a DELETE request at /user');
 });
@@ -675,6 +680,18 @@ app.use(cookieParser());
 
 七、 在 Express 中使用模版引擎
 
+- express template
+
+  - ejs
+  - pug
+  - jade
+  - art-template
+
+- 页面渲染render
+
+  - SSR(Server Side Render)
+  - CSR(Client Side Render)
+
 需要在应用中进行如下设置才能让 Express 渲染模板文件：
 
 - views, 放模板文件的目录，比如： app.set('views', './views')
@@ -697,8 +714,9 @@ const app = express();
 
 // view engine setup
 app.engine('art', require('express-art-template'));
-app.set('view', {
+app.set('view options' /**此处与官网不一致*/, { 
   debug: process.env.NODE_ENV !== 'production',
+  escape: false // 是个坑, 转化HTML5代码
 });
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'art');
@@ -712,4 +730,11 @@ app.set('/', (req, res) => {
     },
   });
 });
+```
+
+```art
+{
+  "ret": true,
+  "data": {{user}}
+}
 ```
