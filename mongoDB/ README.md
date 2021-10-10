@@ -1,5 +1,15 @@
 ### MongoDB
 
+| SQL 术语/概念 | MongoDB 术语/概念 | 解释/说明                              |
+| ------------- | ----------------- | -------------------------------------- |
+| database      | database          | 数据库                                 |
+| table         | collection        | 数据库表/集合                          |
+| row           | document          | 数据记录行/文档                        |
+| column        | field             | 数据字段/域                            |
+| index         | index             | 索引                                   |
+| table joins   |                   | 表连接，MongoDB 不支持                 |
+| primary key   | primary key       | 主键，MongDB 自动将\_id 字段设置为主键 |
+
 一、 安装数据库
 
 https://docs.mongodb.com/manual/administration/install-community/
@@ -23,21 +33,32 @@ mongo
 三、 数据库操作
 
 ```
-use gp145
+db  // 查询当前数据库
+use gp145  // 创建/切换数据库
 db/db.getName()
-show dbs
+show dbs // 查询所有数据库
 db.createCollection('movies')
-db.stats()
-db.version()
-db.getMongo() // connection to 127.0.0.1:27017
-db.dropDatabase()
+db.stats() // 显示数据库状态
+db.version() // 查看当前数据库的版本
+db.getMongo() // connection to 127.0.0.1:27017 查看当前DB链接机器地址
+db.dropDatabase() // 删除数据库
 ```
 
 四、 集合操作
 
 ```
-db.createCollection('user')
-db.getCollectionNames()
+// 创建一个集合
+db.createCollection('user', {size: 20, capped: true, max: 100}) 
+db.colName.isCapped(); // 判断集合是否为定容量
+
+// 得到指定名称的集合
+db.getCollection('account');
+
+// 得到当前db的所有集合
+db.getCollectionNames();
+
+// 显示当前db所有集合的状态
+db.printCollectionStats();
 ```
 
 五、文档操作
@@ -95,6 +116,8 @@ db.user.remove({username: 'xinyi'}, true)
 4. 查找
 
 ```sql
+db.movies.find()
+
 db.movies.find({}, {nm: 1, _id: 0, rt: 1})
 db.movies.find({}, {nm: 1, _id: 0, rt: 1}).sort({rt: -1})
 db.movies.find({}, {nm: 1, _id: 0, rt: 1}).limit(10)
